@@ -25,6 +25,7 @@ import RegisterScreen from "./components/auth/Register";
 import LoginScreen from "./components/auth/Login";
 import MainScreen from "./components/Main";
 import AddScreen from "./components/main/Add";
+import SaveScreen from "./components/main/Save";
 
 if (firebase.apps.length === 0) {
   firebase.initializeApp(firebaseConfig);
@@ -33,7 +34,7 @@ if (firebase.apps.length === 0) {
 const Stack = createStackNavigator();
 const store = createStore(rootReducer, applyMiddleware(thunk));
 
-export default function App() {
+export default function App(props) {
   const [loggedIn, setLoggedIn] = useState(false);
   const [loaded, setLoaded] = useState(false);
 
@@ -90,7 +91,12 @@ export default function App() {
           <Stack.Screen
             name="Add"
             component={AddScreen}
-            options={{ headerShown: true }}
+            navigation={props.navigation}
+          />
+          <Stack.Screen
+            name="Save"
+            component={SaveScreen}
+            navigation={props.navigation}
           />
         </Stack.Navigator>
       </NavigationContainer>

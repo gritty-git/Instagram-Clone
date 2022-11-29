@@ -8,6 +8,7 @@ export default function Register(props) {
   const [name, setName] = useState("");
 
   function onSignUp() {
+    console.log("came");
     firebase
       .auth()
       .createUserWithEmailAndPassword(email, password)
