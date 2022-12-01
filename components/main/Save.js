@@ -36,7 +36,6 @@ export default function Save(props) {
 
     task.on("state_changed", taskProgress, taskError, taskCompleted);
   };
-  console.log(props.route.params.image);
 
   const savePostData = (downloadURL) => {
     firebase

@@ -71,17 +71,16 @@ export function fetchUserFollowing() {
           following,
         });
         for (let i = 0; i < following.length; i++) {
-          // console.log(following[i]);
-          dispatch(fetchUsersData(following[i]));
+          dispatch(fetchUsersData(following[i], true));
         }
       });
   };
 }
 
-export function fetchUsersData(uid) {
+export function fetchUsersData(uid, getPosts) {
   return (dispatch, getState) => {
     const found = getState().usersState.users.some((el) => el.uid === uid);
-    // console.log(found, getState().usersState);
+
     if (!found) {
       firebase
         .firestore()
@@ -92,21 +91,22 @@ export function fetchUsersData(uid) {
           if (snapshot.exists) {
             let user = snapshot.data();
             user.uid = snapshot.id;
-            // console.log(user, "at fetch users data");
+
             dispatch({
               type: USERS_DATA_STATE_CHANGE,
               user,
             });
-            dispatch(fetchUsersFollowingPosts(uid));
           } else {
             console.log("does not exists");
           }
         });
+      if (getPosts) {
+        dispatch(fetchUsersFollowingPosts(uid));
+      }
     }
   };
 }
 export function fetchUsersFollowingPosts(uid) {
-  // console.log("at fetchUsers", uid);
   return (dispatch, getState) => {
     firebase
       .firestore()
@@ -116,21 +116,24 @@ export function fetchUsersFollowingPosts(uid) {
       .orderBy("creation", "asc")
       .get()
       .then((snapshot) => {
-        const uid = snapshot.docs[0].ref.path.split("/")[1];
-        // console.log(uid, "at firebase snapshot");
-        // console.log({ snapshot, uid });
-        const user = getState().usersState.users.find((el) => el.uid === uid);
+        console.log(snapshot.docs.length);
+        if (snapshot.docs.length > 0) {
+          const uid = snapshot.docs[0].ref.path.split("/")[1];
+          //console.log(snapshot.docs.length);
+          const user = getState().usersState.users.find((el) => el.uid === uid);
 
-        let posts = snapshot.docs.map((doc) => {
-          const data = doc.data();
-          const id = doc.id;
-          return { id, ...data, user };
-        });
-        dispatch({
-          type: USERS_POSTS_STATE_CHANGE,
-          posts,
-          uid,
-        });
+          let posts = snapshot.docs.map((doc) => {
+            const data = doc.data();
+            const id = doc.id;
+            return { id, ...data, user };
+          });
+
+          dispatch({
+            type: USERS_POSTS_STATE_CHANGE,
+            posts,
+            uid,
+          });
+        }
       });
   };
 }

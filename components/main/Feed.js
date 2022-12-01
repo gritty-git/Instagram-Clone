@@ -10,22 +10,22 @@ function Feed(props) {
   const [following, setFollowing] = useState(false);
 
   useEffect(() => {
-    let posts = [];
-    // console.log(props.userLoaded);
-    if (props.userLoaded == props.following.length) {
+    let posts_temp = [];
+    //console.log(props.userLoaded, props.following);
+    if (props.usersFollowingLoaded == props.following.length) {
       for (let i = 0; i < props.following.length; i++) {
         const user = props.users.find((el) => el.uid === props.following[i]);
         if (user != undefined) {
-          posts = [...posts, ...user.posts];
+          posts_temp = [...posts_temp, ...user.posts];
         }
       }
-      posts.sort(function (x, y) {
+      posts_temp.sort(function (x, y) {
         return x.creation - y.creation;
       });
-
-      setPosts(posts);
+      //console.log(posts_temp);
+      setPosts(posts_temp);
     }
-  }, [props.userLoaded]);
+  }, [props.usersFollowingLoaded, props.following]);
 
   return (
     <View style={styles.container}>
@@ -38,6 +38,16 @@ function Feed(props) {
             <View style={styles.containerImage}>
               <Text style={styles.container}>{item.user.name}</Text>
               <Image style={styles.image} source={{ uri: item.downloadURL }} />
+              <Text
+                onPress={() =>
+                  props.navigation.navigate("Comment", {
+                    postId: item.id,
+                    uid: item.user.uid,
+                  })
+                }
+              >
+                View Comments...
+              </Text>
             </View>
           )}
         />
@@ -69,7 +79,7 @@ const mapStateToProps = (store) => ({
   currentUser: store.userState.currentUser,
   following: store.userState.following,
   users: store.usersState.users,
-  userLoaded: store.usersState.userLoaded,
+  usersFollowingLoaded: store.usersState.usersFollowingLoaded,
 });
 
 export default connect(mapStateToProps, null)(Feed);

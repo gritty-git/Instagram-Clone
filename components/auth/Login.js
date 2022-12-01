@@ -11,7 +11,7 @@ export default function Login(props) {
       .auth()
       .signInWithEmailAndPassword(email, password)
       .then((res) => {
-        console.log(res);
+        //console.log(res);
       })
       .catch((err) => {
         console.log(err);
